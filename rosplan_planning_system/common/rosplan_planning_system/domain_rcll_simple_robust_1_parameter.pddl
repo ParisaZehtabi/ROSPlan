@@ -61,7 +61,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base
 	:parameters (?r - robot ?bs - base_station ?o - order)
-	:duration (and (>= ?duration 0) (<= ?duration 1800))
+	:duration (= ?duration 120)
 	:condition (and
 		(over all (robot_at ?r ?bs))
 		(over all (carrying_order ?r ?o))
