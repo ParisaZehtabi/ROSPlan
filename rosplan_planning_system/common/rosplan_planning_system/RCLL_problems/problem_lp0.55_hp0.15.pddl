@@ -1,7 +1,3 @@
-45.3249015816
-90.6498031633
-92.6942111527
-22.6942111527
 (define (problem example_problem)
 (:domain rcllsimple)
 (:objects
