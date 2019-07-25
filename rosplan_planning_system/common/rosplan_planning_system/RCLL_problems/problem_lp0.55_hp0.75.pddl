@@ -1,3 +1,7 @@
+45.3249015816
+90.6498031633
+208.041925645
+138.041925645
 (define (problem example_problem)
 (:domain rcllsimple)
 (:objects
@@ -25,8 +29,8 @@
     (open ow1)
     (accepts_order o1 ow1)
     ;; order window closes
-    (at 346.324901582 (not (open ow0)))
-    (at 629.041925645 (not (open ow1)))
+    (at 436.974704745 (not (open ow0)))
+    (at 767.08385129 (not (open ow1)))
 )
 (:goal (and
     (order_delivered)
