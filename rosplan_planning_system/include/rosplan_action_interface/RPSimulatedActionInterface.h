@@ -22,6 +22,7 @@ namespace KCL_rosplan {
 		double action_duration;
 		double action_duration_stddev;
 		double action_probability;
+		double assignment_value;
 
 	public:
 

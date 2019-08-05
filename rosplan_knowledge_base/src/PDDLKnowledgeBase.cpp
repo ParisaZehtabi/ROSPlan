@@ -125,9 +125,11 @@ namespace KCL_rosplan {
 
     /* get domain predicate details */
     bool PDDLKnowledgeBase::getPredicateDetails(rosplan_knowledge_msgs::GetDomainPredicateDetailsService::Request  &req, rosplan_knowledge_msgs::GetDomainPredicateDetailsService::Response &res) {
+
+        // check predicates first
         VALVisitorPredicate pred_visitor;
         VAL1_2::pred_decl_list* predicates = domain_parser.domain->predicates;
-        for (VAL1_2::pred_decl_list::const_iterator ci = predicates->begin(); ci != predicates->end(); ci++) {            
+        for (VAL1_2::pred_decl_list::const_iterator ci = predicates->begin(); ci != predicates->end(); ci++) {
             if((*ci)->getPred()->symbol::getName() == req.name) {
                 pred_visitor.visit_pred_decl(*ci);
                 res.predicate = pred_visitor.msg;
@@ -141,6 +143,25 @@ namespace KCL_rosplan {
                 return true;
             }
         }
+
+        // check functions second
+        VAL1_2::func_decl_list* functions = domain_parser.domain->functions;
+        for (VAL1_2::func_decl_list::const_iterator ci = functions->begin(); ci != functions->end(); ci++) {
+            if((*ci)->getFunction()->symbol::getName() == req.name) {
+                pred_visitor.visit_func_decl(*ci);
+                res.predicate = pred_visitor.msg;
+
+                // predicate is sensed
+                if(sensed_predicates.find(req.name) == sensed_predicates.end()) {
+                    sensed_predicates[req.name] = false;
+                }
+                res.is_sensed = sensed_predicates[req.name];
+
+                return true;
+            }
+        }
+
+        // nothing was found
         return false;
     }
 

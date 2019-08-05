@@ -27,6 +27,7 @@ namespace KCL_rosplan {
 
 		/* visitor methods */
 		virtual void visit_pred_decl(VAL1_2::pred_decl *);
+        virtual void visit_func_decl(VAL1_2::func_decl *p);
 	};
 
 } // close namespace
