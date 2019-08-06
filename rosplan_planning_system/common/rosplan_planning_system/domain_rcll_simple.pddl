@@ -22,7 +22,8 @@
     (not_collected ?o - order)
     (collected ?r - robot ?o - order)
     (base_produced ?o - order)
-    (ring_produced ?o - order)
+    (ring_produced ?o - order)  
+    (ready ?o - order)
     (order_delivered)
 
     ;; order window
@@ -49,8 +50,10 @@
 		(over all (robot_at ?r ?s))
 		(at start (not_carrying_order ?r))
 		(at start (not_collected ?o))
+		(at start (ready ?o))
 		)
 	:effect (and
+		(at start (not (ready ?o)))
 		(at start (not (not_carrying_order ?r)))
 		(at start (not (not_collected ?o)))
                 (at start (collected ?r ?o))
@@ -113,6 +116,7 @@
 		(over all (robot_at ?r ?s))
 		)
 	:effect (and
+		(at end (not (ready ?o)))
    		(at end (not (collected ?r ?o)))
 		(at end (not (carrying_order ?r ?o)))
 		(at end (not_carrying_order ?r))
