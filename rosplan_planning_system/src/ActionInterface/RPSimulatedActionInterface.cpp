@@ -46,7 +46,7 @@ namespace KCL_rosplan {
 
         // numeric update
         if(succ) {
-std::cout << "1" << std::endl;
+
             // find PDDL parameters
             std::map<std::string, std::string> boundParameters;
             for(size_t j=0; j<params.typed_parameters.size(); j++) {
@@ -57,37 +57,86 @@ std::cout << "1" << std::endl;
                     }
                 }
             }
-std::cout << "2" << std::endl;
+
 			// update knowledge base
 			rosplan_knowledge_msgs::KnowledgeUpdateServiceArray updatePredSrv;
-std::cout << "3" << std::endl;
+
 			// numeric END del effects
 			for(int i=0; i<op.at_end_assign_effects.size(); i++) {
 				rosplan_knowledge_msgs::KnowledgeItem item;
 				item.knowledge_type = rosplan_knowledge_msgs::KnowledgeItem::FUNCTION;
 				item.attribute_name = op.at_end_assign_effects[i].LHS.name;
-std::cout << op.at_end_assign_effects[i].LHS.name << std::endl;
 				item.values.clear();
 				diagnostic_msgs::KeyValue pair;
 				for(size_t j=0; j<op.at_end_assign_effects[i].LHS.typed_parameters.size(); j++) {
-std::cout << op.at_end_assign_effects[i].LHS.typed_parameters[i].key << std::endl;
-std::map<std::string, rosplan_knowledge_msgs::DomainFormula>::iterator pit = predicates.begin();
-for(;pit!=predicates.end();pit++) {
-    std::cout << "--" << pit->first << std::endl;
-}
-std::cout << "A: " << predicates[op.at_end_assign_effects[i].LHS.name].typed_parameters[j].key << std::endl;
-std::cout << "B: " << boundParameters[op.at_end_assign_effects[i].LHS.typed_parameters[j].key] << std::endl;
 					pair.key = predicates[op.at_end_assign_effects[i].LHS.name].typed_parameters[j].key;
 					pair.value = boundParameters[op.at_end_assign_effects[i].LHS.typed_parameters[j].key];
 					item.values.push_back(pair);
 				}
-				item.function_value = assignment_value;
+
+                // set up KB service
+                ros::NodeHandle nh("~");
+                std::string kb = "knowledge_base";
+                nh.getParam("knowledge_base", kb);
+                std::stringstream ss;
+                ss << "/" << kb << "/state/functions";
+                ros::service::waitForService(ss.str(),ros::Duration(20));
+                ros::ServiceClient funcClient = nh.serviceClient<rosplan_knowledge_msgs::GetAttributeService>(ss.str());
+
+                // fetch existing value of the function
+                double function_value = 0;
+                rosplan_knowledge_msgs::GetAttributeService funcSrv;
+                funcSrv.request.predicate_name = op.at_end_assign_effects[i].LHS.name;
+                if(funcClient.call(funcSrv)) {
+                    std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator kit = funcSrv.response.attributes.begin();
+                    for(; kit!=funcSrv.response.attributes.end(); kit++) {
+                        bool match = true;
+                        if(kit->values.size() != item.values.size()) continue;
+                        for(int p=0; p<kit->values.size(); p++) {
+                            if(kit->values[p].value != item.values[p].value) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        if(match) {
+                            function_value = kit->function_value;
+                            break;
+                        }
+                    }
+                } else {
+                    ROS_ERROR("KCL: (%s) could not call Knowledge Base for function value during assignment effect.", params.name.c_str());
+                }
+
+                switch(op.at_end_assign_effects[i].assign_type) {
+                case rosplan_knowledge_msgs::DomainAssignment::ASSIGN:
+    				ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
+    				item.function_value = assignment_value;
+                    break;
+                case rosplan_knowledge_msgs::DomainAssignment::INCREASE:
+    				ROS_INFO("KCL: (%s) increasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
+    				item.function_value = function_value + assignment_value;                    
+                    break;
+                case rosplan_knowledge_msgs::DomainAssignment::DECREASE:
+    				ROS_INFO("KCL: (%s) decreasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
+    				item.function_value = function_value - assignment_value;                    
+                    break;
+                case rosplan_knowledge_msgs::DomainAssignment::SCALE_UP:
+    				ROS_INFO("KCL: (%s) scaling up %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
+    				item.function_value = function_value * assignment_value;                    
+                    break;
+                case rosplan_knowledge_msgs::DomainAssignment::SCALE_DOWN:
+    				ROS_INFO("KCL: (%s) scaling down %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
+    				item.function_value = function_value / assignment_value;                    
+                    break;
+                case rosplan_knowledge_msgs::DomainAssignment::ASSIGN_CTS:
+    				ROS_WARN("KCL: (%s) not implemented CONTINUOUS ASSIGNMENT effects of a simulated action.", params.name.c_str());                    
+                    break;
+                }
+
 				updatePredSrv.request.knowledge.push_back(item);
 				updatePredSrv.request.update_type.push_back(rosplan_knowledge_msgs::KnowledgeUpdateService::Request::ADD_KNOWLEDGE);
-
-				ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
 			}
-std::cout << "4" << std::endl;
+
 			if(updatePredSrv.request.knowledge.size()>0 && !update_knowledge_client.call(updatePredSrv))
 				ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base", params.name.c_str());
         }

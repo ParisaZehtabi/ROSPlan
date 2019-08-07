@@ -9,6 +9,7 @@
 #include "rosplan_knowledge_msgs/KnowledgeUpdateServiceArray.h"
 #include "rosplan_knowledge_msgs/GetDomainOperatorDetailsService.h"
 #include "rosplan_knowledge_msgs/GetDomainPredicateDetailsService.h"
+#include "rosplan_knowledge_msgs/GetAttributeService.h"
 #include "diagnostic_msgs/KeyValue.h"
 
 #ifndef KCL_action_interface
