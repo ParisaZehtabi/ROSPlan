@@ -3,13 +3,14 @@
 
     <!-- arguments -->
     <arg name="pddl_action_name" />
-    <arg name="action_duration"        default="0.0" />
-    <arg name="action_duration_stddev" default="0.0" />
-    <arg name="action_probability"     default="1.0" />
-    <arg name="assignment_value"       default="1" />
-    <arg name="knowledge_base"         default="rosplan_knowledge_base" />
-    <arg name="action_dispatch_topic"  default="/rosplan_plan_dispatcher/action_dispatch" />
-    <arg name="action_feedback_topic"  default="/rosplan_plan_dispatcher/action_feedback" />
+    <arg name="action_duration"          default="0.0" />
+    <arg name="action_duration_stddev"   default="0.0" />
+    <arg name="action_probability"       default="1.0" />
+    <arg name="assignment_value"         default="1" />
+    <arg name="action_assignment_stddev" default="0.0" />
+    <arg name="knowledge_base"           default="rosplan_knowledge_base" />
+    <arg name="action_dispatch_topic"    default="/rosplan_plan_dispatcher/action_dispatch" />
+    <arg name="action_feedback_topic"    default="/rosplan_plan_dispatcher/action_feedback" />
 
     <!-- simulated action -->
     <node name="rosplan_interface_$(arg pddl_action_name)" pkg="rosplan_planning_system" type="simulatedAction" respawn="false" output="screen">
@@ -21,6 +22,7 @@
         <param name="action_dispatch_topic"  value="$(arg action_dispatch_topic)" />
         <param name="action_feedback_topic"  value="$(arg action_feedback_topic)" />
         <param name="assignment_value"       value="$(arg assignment_value)" />
+        <param name="action_assignment_stddev" value="$(arg action_assignment_stddev)" />
     </node>
 
 </launch>

@@ -10,6 +10,7 @@ namespace KCL_rosplan {
 		nh.getParam("action_duration", action_duration);
 		nh.getParam("assignment_value", assignment_value);
 		nh.getParam("action_duration_stddev", action_duration_stddev);
+		nh.getParam("action_assignment_stddev", action_assignment_stddev);
 		nh.getParam("action_probability", action_probability);
 	}
 
@@ -107,26 +108,33 @@ namespace KCL_rosplan {
                     ROS_ERROR("KCL: (%s) could not call Knowledge Base for function value during assignment effect.", params.name.c_str());
                 }
 
+                double assign = assignment_value;
+                if(action_assignment_stddev > 0) {
+                    std::default_random_engine ass_gen(ros::WallTime::now().toSec());
+                    std::normal_distribution<double> ass_dist(assignment_value, action_assignment_stddev);
+                    assign = ass_dist(ass_gen);
+                }
+
                 switch(op.at_end_assign_effects[i].assign_type) {
                 case rosplan_knowledge_msgs::DomainAssignment::ASSIGN:
-    				ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
-    				item.function_value = assignment_value;
+    				ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+    				item.function_value = assign;
                     break;
                 case rosplan_knowledge_msgs::DomainAssignment::INCREASE:
-    				ROS_INFO("KCL: (%s) increasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
-    				item.function_value = function_value + assignment_value;                    
+    				ROS_INFO("KCL: (%s) increasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+    				item.function_value = function_value + assign;                    
                     break;
                 case rosplan_knowledge_msgs::DomainAssignment::DECREASE:
-    				ROS_INFO("KCL: (%s) decreasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
-    				item.function_value = function_value - assignment_value;                    
+    				ROS_INFO("KCL: (%s) decreasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+    				item.function_value = function_value - assign;                    
                     break;
                 case rosplan_knowledge_msgs::DomainAssignment::SCALE_UP:
-    				ROS_INFO("KCL: (%s) scaling up %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
-    				item.function_value = function_value * assignment_value;                    
+    				ROS_INFO("KCL: (%s) scaling up %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+    				item.function_value = function_value * assign;                    
                     break;
                 case rosplan_knowledge_msgs::DomainAssignment::SCALE_DOWN:
-    				ROS_INFO("KCL: (%s) scaling down %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assignment_value);
-    				item.function_value = function_value / assignment_value;                    
+    				ROS_INFO("KCL: (%s) scaling down %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+    				item.function_value = function_value / assign;                    
                     break;
                 case rosplan_knowledge_msgs::DomainAssignment::ASSIGN_CTS:
     				ROS_WARN("KCL: (%s) not implemented CONTINUOUS ASSIGNMENT effects of a simulated action.", params.name.c_str());                    
