@@ -26,6 +26,7 @@
     (base_produced_3 ?o - order)
     (base_produced_4 ?o - order)
     (base_produced_5 ?o - order)
+    (base_produced_6 ?o - order)
     (ring_produced ?o - order)
     (order_delivered)
 
@@ -48,7 +49,7 @@
 ;; Collect order from shelf
 (:durative-action collect_order
     :parameters (?r - robot ?s - shelf ?o - order)
-    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :duration (= ?duration 60)
     :condition (and
         (over all (robot_at ?r ?s))
         (at start (not_carrying_order ?r))
@@ -89,7 +90,7 @@
 
 (:durative-action produce_base_3
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :duration (= ?duration 120)
     :condition (and
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
@@ -101,7 +102,7 @@
 
 (:durative-action produce_base_4
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :duration (= ?duration 120)
     :condition (and
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
@@ -113,13 +114,25 @@
 
 (:durative-action produce_base_5
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :duration (= ?duration 120)
     :condition (and
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         )
     :effect (and
         (at end (base_produced_5 ?o))
+        )
+)
+
+(:durative-action produce_base_6
+    :parameters (?r - robot ?bs - base_station ?o - order)
+    :duration (= ?duration 120)
+    :condition (and
+        (over all (robot_at ?r ?bs))
+        (over all (carrying_order ?r ?o))
+        )
+    :effect (and
+        (at end (base_produced_6 ?o))
         )
 )
 
@@ -135,6 +148,7 @@
         (at start (base_produced_3 ?o))
         (at start (base_produced_4 ?o))
         (at start (base_produced_5 ?o))
+        (at start (base_produced_6 ?o))
         (over all (carrying_order ?r ?o))
         )
     :effect (and
@@ -152,6 +166,7 @@
         (at start (base_produced_3 ?o))
         (at start (base_produced_4 ?o))
         (at start (base_produced_5 ?o))
+        (at start (base_produced_6 ?o))
         (at start (ring_produced ?o))
         (at start (accepts_order ?o ?ow))
         (over all (carrying_order ?r ?o))
@@ -182,6 +197,7 @@
         (at end (not (base_produced_3 ?o)))
         (at end (not (base_produced_4 ?o)))
         (at end (not (base_produced_5 ?o)))
+        (at end (not (base_produced_6 ?o)))
         (at end (not (ring_produced ?o)))
         )
 )
