@@ -26,7 +26,7 @@
     (accepts_order o1 ow1)
     ;; order window closes
     (at 408.596822688 (not (open ow0)))
-    (at 559.082633458 (not (open ow1)))
+    (at 564.082633458 (not (open ow1)))
 )
 (:goal (and
     (order_delivered)

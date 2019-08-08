@@ -21,7 +21,11 @@
     ;; orders
     (not_collected ?o - order)
     (collected ?r - robot ?o - order)
-    (base_produced ?o - order)
+    (base_produced_1 ?o - order)
+    (base_produced_2 ?o - order)
+    (base_produced_3 ?o - order)
+    (base_produced_4 ?o - order)
+    (base_produced_5 ?o - order)
     (ring_produced ?o - order)
     (order_delivered)
 
@@ -59,7 +63,7 @@
 )
 
 ;; Wait for and retrieve a base from the base station
-(:durative-action produce_base
+(:durative-action produce_base_1
     :parameters (?r - robot ?bs - base_station ?o - order)
     :duration (and (>= ?duration 0) (<= ?duration 1800))
     :condition (and
@@ -67,9 +71,58 @@
         (over all (carrying_order ?r ?o))
         )
     :effect (and
-        (at end (base_produced ?o))
+        (at end (base_produced_1 ?o))
         )
 )
+
+(:durative-action produce_base_2
+    :parameters (?r - robot ?bs - base_station ?o - order)
+    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :condition (and
+        (over all (robot_at ?r ?bs))
+        (over all (carrying_order ?r ?o))
+        )
+    :effect (and
+        (at end (base_produced_2 ?o))
+        )
+)
+
+(:durative-action produce_base_3
+    :parameters (?r - robot ?bs - base_station ?o - order)
+    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :condition (and
+        (over all (robot_at ?r ?bs))
+        (over all (carrying_order ?r ?o))
+        )
+    :effect (and
+        (at end (base_produced_3 ?o))
+        )
+)
+
+(:durative-action produce_base_4
+    :parameters (?r - robot ?bs - base_station ?o - order)
+    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :condition (and
+        (over all (robot_at ?r ?bs))
+        (over all (carrying_order ?r ?o))
+        )
+    :effect (and
+        (at end (base_produced_4 ?o))
+        )
+)
+
+(:durative-action produce_base_5
+    :parameters (?r - robot ?bs - base_station ?o - order)
+    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :condition (and
+        (over all (robot_at ?r ?bs))
+        (over all (carrying_order ?r ?o))
+        )
+    :effect (and
+        (at end (base_produced_5 ?o))
+        )
+)
+
 
 ;; Stack a ring onto the base at the ring station
 (:durative-action stack_ring
@@ -77,7 +130,11 @@
     :duration (= ?duration (* 60 (ring_count ?o)))
     :condition (and
         (over all (robot_at ?r ?rs))
-        (at start (base_produced ?o))
+        (at start (base_produced_1 ?o))
+        (at start (base_produced_2 ?o))
+        (at start (base_produced_3 ?o))
+        (at start (base_produced_4 ?o))
+        (at start (base_produced_5 ?o))
         (over all (carrying_order ?r ?o))
         )
     :effect (and
@@ -90,7 +147,11 @@
     :parameters (?r - robot ?ow - order_window ?o - order)
     :duration (= ?duration 1)
     :condition (and
-        (at start (base_produced ?o))
+        (at start (base_produced_1 ?o))
+        (at start (base_produced_2 ?o))
+        (at start (base_produced_3 ?o))
+        (at start (base_produced_4 ?o))
+        (at start (base_produced_5 ?o))
         (at start (ring_produced ?o))
         (at start (accepts_order ?o ?ow))
         (over all (carrying_order ?r ?o))
@@ -116,7 +177,11 @@
         (at end (not (collected ?r ?o)))
         (at end (not (carrying_order ?r ?o)))
         (at end (not_carrying_order ?r))
-        (at end (not (base_produced ?o)))
+        (at end (not (base_produced_1 ?o)))
+        (at end (not (base_produced_2 ?o)))
+        (at end (not (base_produced_3 ?o)))
+        (at end (not (base_produced_4 ?o)))
+        (at end (not (base_produced_5 ?o)))
         (at end (not (ring_produced ?o)))
         )
 )
