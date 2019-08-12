@@ -115,6 +115,11 @@ namespace KCL_rosplan {
                     assign = ass_dist(ass_gen);
                 }
 
+                diagnostic_msgs::KeyValue assignPair;
+                assignPair.key = "assignment";
+                assignPair.value = std::to_string(assign);
+                fb.information.push_back(assignPair);
+
                 switch(op.at_end_assign_effects[i].assign_type) {
                 case rosplan_knowledge_msgs::DomainAssignment::ASSIGN:
     				ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assign);
