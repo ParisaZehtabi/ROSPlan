@@ -31,7 +31,7 @@ namespace KCL_rosplan {
 		RPSimulatedActionInterface(ros::NodeHandle &nh);
 
 		/* listen to and process action_dispatch topic */
-		bool concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr& msg);
+		bool concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr &msg, rosplan_dispatch_msgs::ActionFeedback &fb);
 	};
 }
 #endif

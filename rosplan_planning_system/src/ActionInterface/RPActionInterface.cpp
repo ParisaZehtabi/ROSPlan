@@ -218,7 +218,7 @@ namespace KCL_rosplan {
         }
 
         // call concrete implementation
-        action_success = concreteCallback(msg);
+        action_success = concreteCallback(msg, fb);
         ros::spinOnce();
         if(action_cancelled) {
             action_success = false;

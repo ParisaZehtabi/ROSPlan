@@ -15,7 +15,7 @@ namespace KCL_rosplan {
 	}
 
 	/* action dispatch callback */
-	bool RPSimulatedActionInterface::concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr& msg) {
+	bool RPSimulatedActionInterface::concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr &msg, rosplan_dispatch_msgs::ActionFeedback &fb) {
 
 		// wait for some time
         double duration = msg->duration - 1;
