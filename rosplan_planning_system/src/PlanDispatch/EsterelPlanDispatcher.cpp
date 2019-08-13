@@ -17,7 +17,7 @@ namespace KCL_rosplan {
         action_timeout_fraction = 0;
         nh.getParam("timeout_actions", timeout_actions);
         nh.getParam("action_timeout_fraction", action_timeout_fraction);
-
+        
         std::string planTopic = "complete_plan";
         nh.getParam("plan_topic", planTopic);
         bl_end = (planTopic != "/robust_plan");
@@ -39,9 +39,8 @@ namespace KCL_rosplan {
 
     void EsterelPlanDispatcher::reset() {
 
-        // for each node check completion, conditions, and dispatch
+        // preempt currently executing nodes
         for(std::vector<rosplan_dispatch_msgs::EsterelPlanNode>::const_iterator ci = current_plan.nodes.begin(); ci != current_plan.nodes.end(); ci++) {
-            //the main loop
             rosplan_dispatch_msgs::EsterelPlanNode node = *ci;
 
             // dispatch new action
@@ -69,7 +68,7 @@ namespace KCL_rosplan {
 
     
         void EsterelPlanDispatcher::planCallback(const rosplan_dispatch_msgs::EsterelPlan plan) {
-        //void EsterelPlanDispatcher::planCallback(const rosplan_dispatch_msgs::RobustPlan plan) {
+       
                 if(finished_execution) {
                         ROS_INFO("KCL: (%s) Plan received.", ros::this_node::getName().c_str());
                         plan_received = true;
@@ -126,7 +125,6 @@ namespace KCL_rosplan {
                 //the main loop
                 rosplan_dispatch_msgs::EsterelPlanNode node = *ci;
                 // activate plan start edges
-                //parisa: compare the dispatch time with the lower bound
                 if(node.node_type == rosplan_dispatch_msgs::EsterelPlanNode::PLAN_START && !plan_started) {
 
                         // record the time for the PLAN_START node
@@ -160,7 +158,7 @@ namespace KCL_rosplan {
                 for (; eit != node.edges_in.end(); ++eit) {
                     if(!edge_active[(*eit)]) {
                         edges_activate_action = false;
-                        continue;
+                        break;
                     }
                 }
                 if(!edges_activate_action) continue;
@@ -355,6 +353,41 @@ namespace KCL_rosplan {
                         node_real_dispatch_time.insert (std::pair<int,double>(node.node_id, NOW)); 
                     }
                 }
+
+                if(msg->information.size() > 0) {
+                    // find the actual numeric assignment value
+                    double assignment = 0;
+                    for(int i=0;i<msg->information.size();i++) {
+                        if(msg->information[i].key=="assignment") assignment = std::atof(msg->information[i].value.c_str());
+                    }
+                    // find the bounds
+                    for(std::vector<diagnostic_msgs::KeyValue>::iterator kit=current_plan.numeric_bounds.begin(); kit!=current_plan.numeric_bounds.end(); kit++) {
+                        diagnostic_msgs::KeyValue bound = *kit;
+                        if(msg->action_id == std::atoi(bound.key.c_str())){
+                            // check the bounds on actual assignment
+                            double lower = -1;
+                            double upper = -1;
+                            bool set = false;
+                            std::stringstream ss(bound.key);
+                            if(ss.good()) {
+                                std::string substr;
+                                std::getline( ss, substr, ',' );
+                                lower = std::atof(substr.c_str());
+                            }
+                            if(ss.good()) {
+                                std::string substr;
+                                std::getline( ss, substr, ',' );
+                                upper = std::atof(substr.c_str());
+                                set = true;
+                            }
+                            if(set && (lower > assignment || assignment > upper)) {
+                                ROS_WARN("KCL: (%s) Numeric Assignment (%f) outside of bounds (%f,%f)", ros::this_node::getName().c_str(), assignment, lower, upper);
+                                replan_requested = true;
+                            }
+                        }
+                    }
+                }
+
                 action_completed[msg->action_id] = true;
                 state_changed = true;
             }

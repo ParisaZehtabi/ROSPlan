@@ -8,10 +8,9 @@
 #define KCL_simulatedaction
 
 /**
- * This file defines the RPMoveBase class.
- * RPMoveBase is used to connect ROSPlan to the MoveBase library.
- * PDDL "goto_waypoint" actions become "move_base_msgs::MoveBase" actions.
- * Waypoint goals are fetched by name from the SceneDB (implemented by mongoDB).
+ * This file defines the RPSimulatedActionInterface class.
+ * RPSimulatedActionInterface is used to simulate synthetic actions (non physics based simulator)
+ * 
  */
 namespace KCL_rosplan {
 
@@ -21,7 +20,9 @@ namespace KCL_rosplan {
 	private:
 
 		double action_duration;
+		double assignment_value;
 		double action_duration_stddev;
+		double action_assignment_stddev;
 		double action_probability;
 
 	public:
@@ -30,7 +31,7 @@ namespace KCL_rosplan {
 		RPSimulatedActionInterface(ros::NodeHandle &nh);
 
 		/* listen to and process action_dispatch topic */
-		bool concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr& msg);
+		bool concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr &msg, rosplan_dispatch_msgs::ActionFeedback &fb);
 	};
 }
 #endif
