@@ -155,7 +155,7 @@ class RobustEnvelope(object):
 
             self.best_rect = None
             res = compute_envelope_construct(self.domain_path,self.problem_path,self.STN_plan_path,
-                    rectangle_callback = self.final_bound, solver='z3', qelim_name='msat_lw',
+                    rectangle_callback = self.final_bound, solver='z3', qelim_name='msat_fm',
                     debug=False, splitting='monolithic', early_forall_elimination=False,
                     compact_encoding=True, bound=1, simplify_effects=True, timeout=self.stn_timeout)
             rospy.loginfo('KCL: (' + rospy.get_name() + ') STNTool terminated')

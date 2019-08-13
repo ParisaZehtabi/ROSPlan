@@ -27,6 +27,11 @@
     (base_produced_4 ?o - order)
     (base_produced_5 ?o - order)
     (base_produced_6 ?o - order)
+    (ready_2)
+    (ready_3)
+    (ready_4)
+    (ready_5)
+    (ready_6)
     (ring_produced ?o - order)
     (order_delivered)
 
@@ -72,6 +77,7 @@
         (over all (carrying_order ?r ?o))
         )
     :effect (and
+        (at start (ready_2))
         (at end (base_produced_1 ?o))
         )
 )
@@ -80,10 +86,12 @@
     :parameters (?r - robot ?bs - base_station ?o - order)
     :duration (= ?duration 120)
     :condition (and
+        (at start (ready_2))
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         )
     :effect (and
+        (at start (ready_3))
         (at end (base_produced_2 ?o))
         )
 )
@@ -92,10 +100,12 @@
     :parameters (?r - robot ?bs - base_station ?o - order)
     :duration (= ?duration 120)
     :condition (and
+        (at start (ready_3))
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         )
     :effect (and
+        (at start (ready_4))
         (at end (base_produced_3 ?o))
         )
 )
@@ -104,10 +114,12 @@
     :parameters (?r - robot ?bs - base_station ?o - order)
     :duration (= ?duration 120)
     :condition (and
+        (at start (ready_4))
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         )
     :effect (and
+        (at start (ready_5))
         (at end (base_produced_4 ?o))
         )
 )
@@ -116,10 +128,12 @@
     :parameters (?r - robot ?bs - base_station ?o - order)
     :duration (= ?duration 120)
     :condition (and
+        (at start (ready_5))
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         )
     :effect (and
+        (at start (ready_6))
         (at end (base_produced_5 ?o))
         )
 )
@@ -128,6 +142,7 @@
     :parameters (?r - robot ?bs - base_station ?o - order)
     :duration (= ?duration 120)
     :condition (and
+        (at start (ready_6))
         (over all (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         )
