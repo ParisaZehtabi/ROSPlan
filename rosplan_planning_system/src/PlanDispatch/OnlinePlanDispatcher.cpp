@@ -4,6 +4,7 @@
 
 #include <rosplan_dispatch_msgs/GetPlanningParams.h>
 #include "rosplan_planning_system/PlanDispatch/OnlinePlanDispatcher.h"
+
 namespace KCL_rosplan {
 
 
@@ -140,7 +141,7 @@ namespace KCL_rosplan {
                     std::string a;
                     while (std::getline(ss, a, ';')) {
                         std_msgs::String msg;
-//                        std::regex_replace (std::back_inserter(msg.data), a.begin(), a.end(), commas, ", $1"); // Adds a space after the commas for the param list. Needed for the reward computation
+                        //std::regex_replace(std::back_inserter(msg.data), a.begin(), a.end(), commas, ", $1"); // Adds a space after the commas for the param list. Needed for the reward computation
                         // Note: \S matches the first letter of the parameter, so we add it back again
                         rwd_srv.request.action.push_back(msg);
                     }
