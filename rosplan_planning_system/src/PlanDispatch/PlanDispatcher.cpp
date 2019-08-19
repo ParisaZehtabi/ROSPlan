@@ -135,8 +135,15 @@ namespace KCL_rosplan {
             return false;
         }
 
-        // setup service call
+        // create map of operator parameter label to ground object
         rosplan_knowledge_msgs::DomainOperator op = srv.response.op;
+        std::map<std::string,std::string> parameterMap;
+        for(int j=0; j<msg.parameters.size() && j<op.formula.typed_parameters.size(); j++) {
+            std::pair<std::string,std::string> p(op.formula.typed_parameters[j].key,msg.parameters[j].value);
+            parameterMap.insert(p);
+        }
+
+        // setup service call
         rosplan_knowledge_msgs::KnowledgeQueryService positiveQuerySrv;
 
         // iterate through conditions
@@ -228,11 +235,55 @@ namespace KCL_rosplan {
                 for(kit=positiveQuerySrv.response.false_knowledge.begin(); kit != positiveQuerySrv.response.false_knowledge.end(); kit++)
                     ROS_INFO("KCL: (%s) Precondition not achieved: %s", ros::this_node::getName().c_str(), kit->attribute_name.c_str());
             }
-            return positiveQuerySrv.response.all_true && !neg_preconditions;
-
         } else {
             ROS_ERROR("KCL: (%s) Failed to call service query_state", ros::this_node::getName().c_str());
         }
+
+        // checking numeric preconditions 
+        std::vector<rosplan_knowledge_msgs::DomainInequality>::iterator iit = op.at_start_comparison.begin();
+        bool ineq_preconditions = false;
+        rosplan_knowledge_msgs::KnowledgeQueryService numericQuerySrv;
+        for(; iit!=op.at_start_comparison.end(); iit++) {
+            // create condition
+            rosplan_knowledge_msgs::KnowledgeItem condition;
+            condition.knowledge_type = rosplan_knowledge_msgs::KnowledgeItem::INEQUALITY;
+
+            condition.ineq.comparison_type = iit->comparison_type;
+            condition.ineq.grounded = true;
+
+            // populate parameters
+            condition.ineq.RHS = iit->RHS;
+            for(int i=0; i<iit->RHS.tokens.size(); i++) {
+                if(iit->RHS.tokens[i].expr_type == rosplan_knowledge_msgs::ExprBase::FUNCTION) {
+                    for(int j=0; j<iit->RHS.tokens[i].function.typed_parameters.size(); j++) {
+                        condition.ineq.RHS.tokens[i].function.typed_parameters[j].value = parameterMap[condition.ineq.RHS.tokens[i].function.typed_parameters[j].key];
+                    }
+                }
+            }
+            condition.ineq.LHS = iit->LHS;
+            for(int i=0; i<iit->LHS.tokens.size(); i++) {
+                if(iit->LHS.tokens[i].expr_type == rosplan_knowledge_msgs::ExprBase::FUNCTION) {
+                    for(int j=0; j<iit->LHS.tokens[i].function.typed_parameters.size(); j++) {
+                        condition.ineq.LHS.tokens[i].function.typed_parameters[j].value = parameterMap[condition.ineq.LHS.tokens[i].function.typed_parameters[j].key];
+                    }
+                }
+            }
+            numericQuerySrv.request.knowledge.push_back(condition);
+        }
+
+        // check positive conditions in knowledge base
+        if (queryKnowledgeClient.call(numericQuerySrv)) {
+
+            if(!numericQuerySrv.response.all_true) {
+                std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator kit;
+                for(kit=numericQuerySrv.response.false_knowledge.begin(); kit != numericQuerySrv.response.false_knowledge.end(); kit++)
+                    ROS_INFO("KCL: (%s) Numeric precondition not achieved.", ros::this_node::getName().c_str());
+            }
+        } else {
+            ROS_ERROR("KCL: (%s) Failed to call service query_state", ros::this_node::getName().c_str());
+        }
+
+        return positiveQuerySrv.response.all_true && !neg_preconditions && numericQuerySrv.response.all_true;
     }
 
     bool PlanDispatcher::goalAchieved() {
