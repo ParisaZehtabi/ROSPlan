@@ -6,6 +6,7 @@ import rospkg
 import sys
 
 from rosplan_dispatch_msgs.msg import *
+from diagnostic_msgs.msg import KeyValue
 from std_msgs.msg import String
 from std_srvs.srv import Empty, EmptyResponse
 from rosplan_planning_system.pyrobustenvelope import compute_envelope_construct, compute_envelope
@@ -39,7 +40,7 @@ class RobustEnvelope(object):
         self.dict_stn = dict()
 
         # publications
-        self.pub_robust_plan = rospy.Publisher(rospy.get_param('~robust_plan_topic'), EsterelPlan , queue_size=10) # template stuff, TODO: fill
+        self.pub_robust_plan = rospy.Publisher(rospy.get_param('~robust_plan_topic'), EsterelPlan , queue_size=10) 
 
         # subscriptions
         rospy.Subscriber(rospy.get_param('~plan_topic'), EsterelPlan, self.esterelPlanCallback, queue_size=1)
@@ -168,14 +169,22 @@ class RobustEnvelope(object):
             if res:
                 rospy.loginfo('KCL: (' + rospy.get_name() + ') STNTool returned a meaningful rectangle')
                 for p, (l, u) in res.items():
-                    print(p.name + " in [" + str(l) + ", " + str(u)  + "]")
-                    #the upper and lower bound on the edges for parameters
-                    self.dict_dur_lower[p.name] = float(l)
-                    self.dict_dur_upper[p.name] = float(u)
+                    if p.name.find("?") < 0:                        
+                        print(p.name + " in [" + str(l) + ", " + str(u)  + "]")
+                        #the upper and lower bound on the edges for parameters
+                        self.dict_dur_lower[p.name] = float(l)
+                        self.dict_dur_upper[p.name] = float(u)
 
-                    self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_lower_bound = float(l)
-                    self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_upper_bound = float(u)
-
+                        self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_lower_bound = float(l)
+                        self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_upper_bound = float(u)
+                    else:
+                        kv = KeyValue()
+                        kv.key = p.name[1:(p.name.find("?")-1)]
+                        kv.value = str(l) + ", " + str(u)
+                        self.output_robust_plan_msg.numeric_bounds.append(kv)
+                        print(self.output_robust_plan_msg.numeric_bounds)
+                        #print(self.output_robust_plan_msg.nodes[int(p.name[1:(p.name.find("?")-1)])].node_id)
+                        print(p.name + " in [" + str(l) + ", " + str(u)  + "]")
                 #self.paramter_relate_edge()
                 self.publish_robust = True
             else:
