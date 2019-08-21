@@ -25,7 +25,7 @@ namespace KCL_rosplan {
             std::default_random_engine generator(ros::WallTime::now().toSec());
             std::normal_distribution<double> distribution(duration, action_duration_stddev);
             double d = distribution(generator);
-            if(d < duration) d = duration + (duration - d);
+            //if(d < duration) d = duration + (duration - d);
             if(d < 0) d = 0;
     		ROS_INFO("KCL: (%s) Action completing with probability %f and duration %f", params.name.c_str(), action_probability, d);
             if(d>0) {
@@ -60,4 +60,4 @@ namespace KCL_rosplan {
 		rpsa.runActionInterface();
 
 		return 0;
-	}
+}

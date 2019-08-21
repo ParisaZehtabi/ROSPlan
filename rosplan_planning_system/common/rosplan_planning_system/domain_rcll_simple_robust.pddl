@@ -173,6 +173,8 @@
     :duration (= ?duration (* 60 (ring_count ?o)))
     :condition (and
         (over all (robot_at ?r ?rs))
+        (at start (robot_at ?r ?rs))
+        (at end (robot_at ?r ?rs))
         ; (at start (ready_1))
         ; (at start (ready_2))
         ; (at start (ready_3))
