@@ -181,10 +181,10 @@ class RobustEnvelope(object):
                         kv = KeyValue()
                         kv.key = p.name[1:(p.name.find("?")-1)]
                         kv.value = str(l) + "," + str(u)
-                        #self.output_robust_plan_msg.numeric_bounds.append(kv)
-                        #print(self.output_robust_plan_msg.numeric_bounds)
+                        self.output_robust_plan_msg.numeric_bounds.append(kv)
+                        print(self.output_robust_plan_msg.numeric_bounds)
                         #print(self.output_robust_plan_msg.nodes[int(p.name[1:(p.name.find("?")-1)])].node_id)
-                        print(p.name + " in [" + str(l) + ", " + str(u)  + "]")
+                        print(p.name + " in [" + str(l) + "," + str(u)  + "]")
                 #self.paramter_relate_edge()
                 self.publish_robust = True
             else:

@@ -88,6 +88,7 @@
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="collect_order" />
         <arg name="action_duration" value="59.99" />
+        <arg name="action_duration_stddev" value="59.99" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
