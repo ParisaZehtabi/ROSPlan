@@ -87,7 +87,7 @@ class RobustEnvelope(object):
             parameter_count = 0
             for edge in input_esterel_plan.edges:
 
-                if parameter_count < self.max_parameters and edge.edge_type == 1 and (input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("produce_base")):# or input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("produce_base")):
+                if parameter_count < self.max_parameters and edge.edge_type == 1 and (input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("collect_order")):# or input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("produce_base")):
                     stn_plan_file.write("parameter dur_" + str(parameter_count) + " default " + str(edge.duration_lower_bound) + ";\n")
                     self.dict_params["dur_" + str(parameter_count)] = edge.edge_id
                     bounds = "[dur_" + str(parameter_count) + ", dur_" + str(parameter_count) + "]"
@@ -156,7 +156,7 @@ class RobustEnvelope(object):
 
             self.best_rect = None
             res = compute_envelope_construct(self.domain_path,self.problem_path,self.STN_plan_path,
-                    rectangle_callback = self.final_bound, solver='z3', qelim_name='msat_fm',
+                    rectangle_callback = self.final_bound, solver='z3', qelim_name='msat_lw',
                     debug=False, splitting='monolithic', early_forall_elimination=False,
                     compact_encoding=True, bound=1, simplify_effects=True, timeout=self.stn_timeout)
             rospy.loginfo('KCL: (' + rospy.get_name() + ') STNTool terminated')
@@ -180,9 +180,9 @@ class RobustEnvelope(object):
                     else:
                         kv = KeyValue()
                         kv.key = p.name[1:(p.name.find("?")-1)]
-                        kv.value = str(l) + ", " + str(u)
-                        self.output_robust_plan_msg.numeric_bounds.append(kv)
-                        print(self.output_robust_plan_msg.numeric_bounds)
+                        kv.value = str(l) + "," + str(u)
+                        #self.output_robust_plan_msg.numeric_bounds.append(kv)
+                        #print(self.output_robust_plan_msg.numeric_bounds)
                         #print(self.output_robust_plan_msg.nodes[int(p.name[1:(p.name.find("?")-1)])].node_id)
                         print(p.name + " in [" + str(l) + ", " + str(u)  + "]")
                 #self.paramter_relate_edge()
