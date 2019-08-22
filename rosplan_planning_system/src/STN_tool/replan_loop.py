@@ -50,6 +50,7 @@ while not goal_achieved and replans<10:
             pp()
 
             if use_stn_tool:
+                time.sleep(1)
                 ps = rospy.ServiceProxy('/run_STN', Empty)
                 ps()
 
