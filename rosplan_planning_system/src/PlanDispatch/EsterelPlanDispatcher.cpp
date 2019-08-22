@@ -361,9 +361,12 @@ namespace KCL_rosplan {
                         if(msg->information[i].key=="assignment") assignment = std::atof(msg->information[i].value.c_str());
                     }
                     // find the bounds
+                    bool bound_found = false;
                     for(std::vector<diagnostic_msgs::KeyValue>::iterator kit=current_plan.numeric_bounds.begin(); kit!=current_plan.numeric_bounds.end(); kit++) {
                         diagnostic_msgs::KeyValue bound = *kit;
                         if(msg->action_id == std::atoi(bound.key.c_str())){
+                            bound_found = true;
+
                             // check the bounds on actual assignment
                             double lower = -1;
                             double upper = -1;
@@ -384,6 +387,52 @@ namespace KCL_rosplan {
                                 ROS_WARN("KCL: (%s) Numeric Assignment (%f) outside of bounds (%f,%f)", ros::this_node::getName().c_str(), assignment, lower, upper);
                                 replan_requested = true;
                             }
+                        }
+                    }
+                    if(!bound_found) {
+                        // check bounds against the value from the domain
+                        rosplan_knowledge_msgs::GetDomainOperatorDetailsService opsrv;
+                        bool found_node = false;
+                        for(int i=0;i<current_plan.nodes.size();i++) {
+                            if(current_plan.nodes[i].action.action_id == msg->action_id) {
+                                opsrv.request.name = current_plan.nodes[i].action.name;
+                                found_node = true;
+                                break;
+                            }
+                        }
+                        if(found_node && queryDomainClient.call(opsrv)) {
+
+                            std::vector<rosplan_knowledge_msgs::DomainAssignment>::iterator ait;
+                            std::vector<rosplan_knowledge_msgs::DomainAssignment>::iterator end;                            
+                            for(int i=0;i<2;i++) {
+
+                                if(i==0) {
+                                    ait = opsrv.response.op.at_start_assign_effects.begin();
+                                    end = opsrv.response.op.at_start_assign_effects.end();
+                                } else {
+                                    ait = opsrv.response.op.at_end_assign_effects.begin();
+                                    end = opsrv.response.op.at_end_assign_effects.end();
+                                }
+
+		                        for(; ait!=end; ait++) {
+                                    for(int t=0;t<ait->RHS.tokens.size();t++) {
+                                        rosplan_knowledge_msgs::ExprBase token = ait->RHS.tokens[t];
+                                        if(token.expr_type == rosplan_knowledge_msgs::ExprBase::CONSTANT) {
+
+                                            // widen bounds based on parameter (default by 0)
+                                            float lower = token.constant - action_timeout_fraction*token.constant;
+                                            float upper = token.constant + action_timeout_fraction*token.constant;
+
+                                            if(lower > assignment || assignment > upper) {
+                                                ROS_WARN("KCL: (%s) Numeric Assignment (%f) outside of bounds (%f,%f)", ros::this_node::getName().c_str(), assignment, lower, upper);
+                                                replan_requested = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            ROS_ERROR("KCL: (%s) could not call Knowledge Base for operator details when checking bounds on assignment effect.",  ros::this_node::getName().c_str());
                         }
                     }
                 }
