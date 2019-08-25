@@ -303,11 +303,11 @@ class Encoder(object):
             return self.mgr.Minus(dv, sv)
         elif isinstance(e, pddl.PddlSynthParam):
             if e in self.instance.domain.synth_parameters:
-                return self.parameter(Parameter(e.name))
+                return self.parameter(Parameter(e.name, lower_bound=0, upper_bound=100))
             else:
                 s, _ = action
-                return self.parameter(Parameter(s.instance_name + "." + e.name))
-
+                return self.parameter(Parameter(s.instance_name + "." + e.name, lower_bound=0, upper_bound=100))
+            
         elif isinstance(e, pddl.PddlApply):
             assert not e.actual_parameters
             if cond:
