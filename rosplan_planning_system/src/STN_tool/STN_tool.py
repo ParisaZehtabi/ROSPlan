@@ -86,7 +86,7 @@ class RobustEnvelope(object):
             parameter_count = 0
             for edge in input_esterel_plan.edges:
 
-                if parameter_count < self.max_parameters and edge.edge_type == 1 and (input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("produce_base")):# or input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("produce_base")):
+                if parameter_count < self.max_parameters and edge.edge_type == 1 and (input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("produce_base_1") or input_esterel_plan.nodes[edge.source_ids[0]].action.name.startswith("produce_base_2")):
                     stn_plan_file.write("parameter dur_" + str(parameter_count) + " default " + str(edge.duration_lower_bound) + ";\n")
                     self.dict_params["dur_" + str(parameter_count)] = edge.edge_id
                     bounds = "[dur_" + str(parameter_count) + ", dur_" + str(parameter_count) + "]"
@@ -168,7 +168,7 @@ class RobustEnvelope(object):
             if res:
                 rospy.loginfo('KCL: (' + rospy.get_name() + ') STNTool returned a meaningful rectangle')
                 for p, (l, u) in res.items():
-                    print(p.name + " in [" + str(l) + ", " + str(u)  + "]")
+                    print(p.name + " in [" + str(float(l)) + ", " + str(float(u))  + "]")
                     #the upper and lower bound on the edges for parameters
                     self.dict_dur_lower[p.name] = float(l)
                     self.dict_dur_upper[p.name] = float(u)

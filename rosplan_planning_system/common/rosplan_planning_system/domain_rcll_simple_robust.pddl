@@ -73,7 +73,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base_1
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :duration (and (>= ?duration 0) (<= ?duration 500))
     :condition (and
         (at start (ready_1))
         (over all (robot_at ?r ?bs))
@@ -89,7 +89,7 @@
 
 (:durative-action produce_base_2
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (and (>= ?duration 0) (<= ?duration 1800))
+    :duration (and (>= ?duration 0) (<= ?duration 500))
     :condition (and
         (at start (ready_2))
         (over all (robot_at ?r ?bs))
@@ -105,7 +105,7 @@
 
 (:durative-action produce_base_3
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 120)
+    :duration (= ?duration 150)
     :condition (and
         (at start (ready_3))
         (over all (robot_at ?r ?bs))
@@ -121,7 +121,7 @@
 
 (:durative-action produce_base_4
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 120)
+    :duration (= ?duration 140)
     :condition (and
         (at start (ready_4))
         (over all (robot_at ?r ?bs))
@@ -139,7 +139,7 @@
 
 (:durative-action produce_base_5
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 120)
+    :duration (= ?duration 130)
     :condition (and
         (at start (ready_5))
         (over all (robot_at ?r ?bs))
