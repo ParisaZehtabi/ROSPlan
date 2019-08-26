@@ -179,12 +179,13 @@ class RobustEnvelope(object):
                         self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_upper_bound = float(u)
                     else:
                         kv = KeyValue()
-                        kv.key = p.name[1:(p.name.find("?")-1)]
+                        kv.key = str(self.output_robust_plan_msg.nodes[int(p.name[1:(p.name.find("?")-1)])].action.action_id)
                         kv.value = str(l) + "," + str(u)
                         self.output_robust_plan_msg.numeric_bounds.append(kv)
                         #self.output_robust_plan_msg.numeric_bounds = kv
                         print(self.output_robust_plan_msg.numeric_bounds)
                         #print(self.output_robust_plan_msg.nodes[int(p.name[1:(p.name.find("?")-1)])].node_id)
+                        #print(self.output_robust_plan_msg.nodes[int(p.name[1:(p.name.find("?")-1)])].action.action_id)
                         print(p.name + " in [" + str(l) + "," + str(u)  + "]")
                 #self.paramter_relate_edge()
                 self.publish_robust = True
