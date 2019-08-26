@@ -363,23 +363,25 @@ namespace KCL_rosplan {
                     // find the bounds
                     bool bound_found = false;
                     for(std::vector<diagnostic_msgs::KeyValue>::iterator kit=current_plan.numeric_bounds.begin(); kit!=current_plan.numeric_bounds.end(); kit++) {
-                        diagnostic_msgs::KeyValue bound = *kit;
+                        diagnostic_msgs::KeyValue bound = *kit;    
                         if(msg->action_id == std::atoi(bound.key.c_str())){
                             bound_found = true;
-
+                            
                             // check the bounds on actual assignment
                             double lower = -1;
                             double upper = -1;
                             bool set = false;
-                            std::stringstream ss(bound.key);
+                            std::stringstream ss(bound.value);
                             if(ss.good()) {
                                 std::string substr;
                                 std::getline( ss, substr, ',' );
                                 lower = std::atof(substr.c_str());
+                                
+                                
                             }
                             if(ss.good()) {
                                 std::string substr;
-                                std::getline( ss, substr, ',' );
+                                std::getline( ss, substr , ',');
                                 upper = std::atof(substr.c_str());
                                 set = true;
                             }
