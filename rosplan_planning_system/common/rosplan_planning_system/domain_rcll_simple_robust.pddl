@@ -4,7 +4,7 @@
 
 (:types
     order robot waypoint docker - object
-    shelf base_station order_window docker_station - waypoint
+    shelf ring_station base_station order_window docker_station - waypoint
 )
 
 (:functions
@@ -48,7 +48,7 @@
 ;; Move to any waypoint, avoiding terrain
 (:durative-action goto_waypoint
     :parameters (?r - robot ?from ?to - waypoint)
-    :duration (= ?duration 10)
+    :duration (= ?duration 20)
     :condition (and 
         (at start (robot_at ?r ?from))
         ;(over all (>= (charge_level ?r) 0))
@@ -62,7 +62,7 @@
 ;; Collect order from shelf
 (:durative-action collect_order
     :parameters (?r - robot ?s - shelf ?o - order)
-    :duration  (= ?duration 30) 
+    :duration  (= ?duration 60) 
     :condition (and
         (over all (robot_at ?r ?s))
         (at start  (robot_at ?r ?s))
@@ -84,7 +84,7 @@
 (:durative-action produce_base_1
     :parameters (?r - robot ?bs - base_station ?o - order)
     :synth-parameters (?refueling_rate)
-    :duration (= ?duration 60)
+    :duration (= ?duration 170)
     :condition (and
         (at start (ready_1))
         (over all (robot_at ?r ?bs))
@@ -105,7 +105,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base_2
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 60)
+    :duration (= ?duration 160)
     :condition (and
         (at start (ready_2))
         (over all (robot_at ?r ?bs))
@@ -126,7 +126,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base_3
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 60)
+    :duration (= ?duration 150)
     :condition (and
         (at start (ready_3))
         (over all (robot_at ?r ?bs))
@@ -146,7 +146,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base_4
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 60)
+    :duration (= ?duration 140)
     :condition (and
         (at start (ready_4))
         (over all (robot_at ?r ?bs))
@@ -166,7 +166,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base_5
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 60)
+    :duration (= ?duration 130)
     :condition (and
         (at start (ready_5))
         (over all (robot_at ?r ?bs))
@@ -186,7 +186,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base_6
     :parameters (?r - robot ?bs - base_station ?o - order)
-    :duration (= ?duration 60)
+    :duration (= ?duration 120)
     :condition (and
         (at start (ready_6))
         (over all (robot_at ?r ?bs))
@@ -206,12 +206,12 @@
 
 
 (:durative-action stack_ring
-    :parameters (?r - robot ?bs - base_station ?o - order)
+    :parameters (?r - robot ?rs - ring_station ?o - order)
     :duration (= ?duration (* 120 (ring_count ?o)))
     :condition (and
-        (over all (robot_at ?r ?bs))
-        (at start (robot_at ?r ?bs))
-        (at end (robot_at ?r ?bs))
+        (over all (robot_at ?r ?rs))
+        (at start (robot_at ?r ?rs))
+        (at end (robot_at ?r ?rs))
         (at start (base_produced_1 ?o))
         (at start (base_produced_2 ?o))
         (at start (base_produced_3 ?o))
@@ -256,7 +256,7 @@
 ;; Dispose of a bad order
 (:durative-action dispose
     :parameters (?r - robot ?s - shelf ?o - order)
-    :duration (= ?duration 5)
+    :duration (= ?duration 10)
     :condition (and
         (at start (collected ?r ?o))
         (over all (robot_at ?r ?s))
