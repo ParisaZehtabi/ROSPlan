@@ -12,9 +12,10 @@
     <arg name="stn_timeout"        default="600" />
     <arg name="stn_tool"           default="true" />
     <arg name="experiment_batch"   default="0" />
-    <arg name="timeout_actions"         default="true" />
+    <arg name="timeout_actions"    default="true" />
+    <arg name="assignment_value"   default="110" />
     <arg name="action_timeout_fraction" default="0.0" />
-    <arg name="output_directory" default="~/" />
+    <arg name="output_directory"   default="~/" />
 
     <!-- knowledge base -->
     <node name="rosplan_knowledge_base" pkg="rosplan_knowledge_base" type="knowledgeBase" respawn="false" output="screen">
@@ -46,7 +47,7 @@
          <arg name="domain_path"          value="$(arg domain_path)" />
          <arg name="problem_path"         value="$(arg problem_path)" />
          <arg name="data_path"            value="$(find rosplan_planning_system)/common/rosplan_planning_system/" />
-         <arg name="planner_command"      value="timeout 5 $(find rosplan_planning_system)/common/bin/popf -n DOMAIN PROBLEM" />
+         <arg name="planner_command"      value="timeout 10 $(find rosplan_planning_system)/common/bin/popf -n DOMAIN PROBLEM" />
      </include>
 
     <!-- plan parsing -->
@@ -99,7 +100,7 @@
         <arg name="pddl_action_name" value="produce_base_1" />
         <arg name="action_duration" value="169.99" />
         <!--arg name="action_duration_stddev" value="59.99" /-->
-        <arg name="assignment_value" value="12" />
+        <arg name="assignment_value" value="30" />
         <arg name="action_assignment_stddev" value="7" />
     </include>
 
@@ -107,35 +108,35 @@
         <arg name="pddl_action_name" value="produce_base_2" />
         <arg name="action_duration" value="159.99" />
         <!--arg name="action_duration_stddev" value="119.99" /-->
-        <arg name="assignment_value" value="12" />
+        <arg name="assignment_value" value="20" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="produce_base_3" />
         <!--arg name="action_duration" value="119.99" /-->
         <arg name="action_duration" value="149.99" />
-        <arg name="assignment_value" value="12" />
+        <arg name="assignment_value" value="20" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="produce_base_4" />
         <!--arg name="action_duration" value="119.99" /-->
         <arg name="action_duration" value="139.99" />
-        <arg name="assignment_value" value="12" />
+        <arg name="assignment_value" value="20" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="produce_base_5" />
         <!--arg name="action_duration" value="119.99" /-->
         <arg name="action_duration" value="129.99" />
-        <arg name="assignment_value" value="12" />
+        <arg name="assignment_value" value="20" />
     </include>
     
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="produce_base_6" />
         <!--arg name="action_duration" value="119.99" /-->
         <arg name="action_duration" value="119.99" />
-        <arg name="assignment_value" value="12" />
+        <arg name="assignment_value" value="20" />
     </include>
     
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
@@ -145,13 +146,13 @@
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="deliver_order" />
         <arg name="action_duration" value="1" />
-        <arg name="assignment_value" value="27" />
+        <arg name="assignment_value" value="29" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="dispose" />
         <arg name="action_duration" value="10" />
-        <arg name="assignment_value" value="110" />
+        <arg name="assignment_value" value="$(arg assignment_value)" />
     </include>
 </launch>
     
