@@ -2,5 +2,5 @@
 
 source /ROSPlan/devel/setup.bash
 echo "running: "
-echo "roslaunch rosplan_planning_system IJCAI_RCLL.launch init_problem_path:=$1 experiment_batch:=$2 stn_tool:=$3 action_timeout_fraction:=$4 output_directory:=$5"
-roslaunch rosplan_planning_system IJCAI_RCLL.launch init_problem_path:=$1 experiment_batch:=$2 stn_tool:=$3 action_timeout_fraction:=$4 output_directory:=$5
+echo "roslaunch rosplan_planning_system IJCAI_RCLL.launch init_problem_path:=$1 experiment_batch:=$2 assignment_value:=$3 stn_tool:=$4 action_timeout_fraction:=$5 output_directory:=$6"
+roslaunch rosplan_planning_system IJCAI_RCLL.launch init_problem_path:=$1 experiment_batch:=$2 assignment_value:=$3 stn_tool:=$4 action_timeout_fraction:=$5 output_directory:=$6
