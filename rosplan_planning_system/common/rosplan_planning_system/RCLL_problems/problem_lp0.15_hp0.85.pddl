@@ -31,8 +31,8 @@
     (not (ready_5))
     (not (ready_6))
     ;; order window closes
-    (at 448.150132466 (not (open ow0)))
-    (at 1280.44070012 (not (open ow1)))
+    (at 429.238289839 (not (open ow0)))
+    (at 932.534405931 (not (open ow1)))
 )
 (:goal (and
     (order_delivered)

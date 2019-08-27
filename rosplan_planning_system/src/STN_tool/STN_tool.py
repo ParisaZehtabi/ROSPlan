@@ -147,6 +147,7 @@ class RobustEnvelope(object):
         else:
             # call STN python tool
             rospy.loginfo('KCL: (' + rospy.get_name() + ') Calling STN python tool')
+            start = time.process_time()
 
             # start = time.time()
             # PERIOD_OF_TIME = 10
@@ -164,14 +165,20 @@ class RobustEnvelope(object):
             # rectangle stored in self.best_rect!
             if res is None:
                 res = self.best_rect
-
+            
             if res:
                 rospy.loginfo('KCL: (' + rospy.get_name() + ') STNTool returned a meaningful rectangle')
                 for p, (l, u) in res.items():
-                    print(p.name + " in [" + str(float(l)) + ", " + str(float(u))  + "]")
+                    print(time.process_time() - start)
+                    
+                    print(p.name + " in [" + str(min((float(u) - (float(time.process_time() - start))) , 0)) + ", " + str(float(u) - (float(time.process_time() - start)))  + "]")
                     #the upper and lower bound on the edges for parameters
-                    self.dict_dur_lower[p.name] = float(l)
-                    self.dict_dur_upper[p.name] = float(u)
+                    self.dict_dur_lower[p.name] = float(l) - (float(time.process_time() - start))
+                    self.dict_dur_upper[p.name] = min((float(u) - (float(time.process_time() - start))) , 0)
+                    
+                    
+
+
 
                     self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_lower_bound = float(l)
                     self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_upper_bound = float(u)
