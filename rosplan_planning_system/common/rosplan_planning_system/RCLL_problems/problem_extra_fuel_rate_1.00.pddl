@@ -34,8 +34,8 @@
     (at 430 (not (open ow0)))
     (at 1010 (not (open ow1)))
     ;; charge level
-    (= (battery_capacity r0) 169.0)
-    (= (charge_level r0) 160.0)
+    (= (battery_capacity r0) 180.0)
+    (= (charge_level r0) 171.0)
 )
 (:goal (and
     (order_delivered)
