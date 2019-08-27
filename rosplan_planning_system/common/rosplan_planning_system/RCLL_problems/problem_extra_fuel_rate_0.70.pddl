@@ -31,11 +31,11 @@
     (not (ready_5))
     (not (ready_6))
     ;; order window closes
-    (at 420 (not (open ow0)))
-    (at 850 (not (open ow1)))
+    (at 430 (not (open ow0)))
+    (at 1000 (not (open ow1)))
     ;; charge level
-    (= (battery_capacity r0) 171.0)
-    (= (charge_level r0) 171.0)
+    (= (battery_capacity r0) 174.0)
+    (= (charge_level r0) 165.0)
 )
 (:goal (and
     (order_delivered)

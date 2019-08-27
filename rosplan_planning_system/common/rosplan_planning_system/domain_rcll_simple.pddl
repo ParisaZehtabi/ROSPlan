@@ -51,6 +51,7 @@
     :duration (= ?duration 20)
     :condition (and 
         (at start (robot_at ?r ?from))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         ;(over all (>= (charge_level ?r) 0))
         )
     :effect (and
@@ -70,6 +71,7 @@
         (at start (not_carrying_order ?r))
         (at start (not_collected ?o))
         (over all (>= (charge_level ?r) 0))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at start (not (not_carrying_order ?r)))
@@ -86,17 +88,19 @@
     :duration (= ?duration 170)
     :condition (and
         (at start (ready_1))
+        (at start (collected ?r ?o))
         (over all (robot_at ?r ?bs))
         (at start (robot_at ?r ?bs))
         (at end (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         (over all (>= (charge_level ?r) 0))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at start (ready_2))
         (at start (not (ready_1)))
         (at end (base_produced_1 ?o))
-        (at end (decrease (charge_level ?r) 12))
+        (at end (decrease (charge_level ?r) 20))
         )
 )
 
@@ -107,17 +111,19 @@
     :duration (= ?duration 160)
     :condition (and
         (at start (ready_2))
+        (at start (collected ?r ?o))
         (over all (robot_at ?r ?bs))
         (at start (robot_at ?r ?bs))
         (at end (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         (over all (>= (charge_level ?r) 0))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at start (ready_3))
         (at start (not (ready_2)))
         (at end (base_produced_2 ?o))
-        (at end (decrease (charge_level ?r) 12))
+        (at end (decrease (charge_level ?r) 20))
         )
 )
 
@@ -128,17 +134,19 @@
     :duration (= ?duration 150)
     :condition (and
         (at start (ready_3))
+        (at start (collected ?r ?o))
         (over all (robot_at ?r ?bs))
         (at start (robot_at ?r ?bs))
         (at end (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         (over all (>= (charge_level ?r) 0))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at start (ready_4))
         (at start (not (ready_3)))
         (at end (base_produced_3 ?o))
-        (at end (decrease (charge_level ?r) 12))
+        (at end (decrease (charge_level ?r) 20))
         )
 )
 
@@ -148,17 +156,19 @@
     :duration (= ?duration 140)
     :condition (and
         (at start (ready_4))
+        (at start (collected ?r ?o))
         (over all (robot_at ?r ?bs))
         (at start (robot_at ?r ?bs))
         (at end (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         (over all (>= (charge_level ?r) 0))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at start (ready_5))
         (at start (not (ready_4)))
         (at end (base_produced_4 ?o))
-        (at end (decrease (charge_level ?r) 12))
+        (at end (decrease (charge_level ?r) 20))
         )
 )
 
@@ -168,17 +178,19 @@
     :duration (= ?duration 130)
     :condition (and
         (at start (ready_5))
+        (at start (collected ?r ?o))
         (over all (robot_at ?r ?bs))
-        ;(at start (robot_at ?r ?bs))
-        ;(at end (robot_at ?r ?bs))
+        (at start (robot_at ?r ?bs))
+        (at end (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
-        ;(over all (>= (charge_level ?r) 0))
+        (over all (>= (charge_level ?r) 0))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at start (ready_6))
         (at start (not (ready_5)))
         (at end (base_produced_5 ?o))
-        (at end (decrease (charge_level ?r) 12))
+        (at end (decrease (charge_level ?r) 20))
         )
 )
 
@@ -188,16 +200,18 @@
     :duration (= ?duration 120)
     :condition (and
         (at start (ready_6))
+        (at start (collected ?r ?o))
         (over all (robot_at ?r ?bs))
         (at start (robot_at ?r ?bs))
         (at end (robot_at ?r ?bs))
         (over all (carrying_order ?r ?o))
         (over all (>= (charge_level ?r) 0))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at start (not (ready_6)))
         (at end (base_produced_6 ?o))
-        (at end (decrease (charge_level ?r) 12))
+        (at end (decrease (charge_level ?r) 20))
         )
 )
 
@@ -242,13 +256,14 @@
         (over all (robot_at ?r ?ow))
         (at start (open ?ow))
         (over all (>= (charge_level ?r) 0))
-        (at start (>= (charge_level ?r) 28))
+        (at start (>= (charge_level ?r) 30))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at end (order_delivered))
         (at end (not (carrying_order ?r ?o)))
         (at end (not_carrying_order ?r))
-        (at end (decrease (charge_level ?r) 27))
+        (at end (decrease (charge_level ?r) 29))
         )
     )
 
@@ -259,6 +274,7 @@
     :condition (and
         (at start (collected ?r ?o))
         (over all (robot_at ?r ?s))
+        ;(over all (<= (charge_level ?r) (battery_capacity ?r)))
         )
     :effect (and
         (at end (not (ready_1)))

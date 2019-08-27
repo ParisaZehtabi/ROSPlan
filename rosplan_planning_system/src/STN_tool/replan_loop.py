@@ -37,6 +37,7 @@ while not goal_achieved and replans<10:
 
     try:
         pg = rospy.ServiceProxy('/rosplan_problem_interface/problem_generation_server', Empty)
+        time.sleep(3)
         if not pg():
             print('NO PROBLEM')
 
@@ -56,13 +57,14 @@ while not goal_achieved and replans<10:
             time.sleep(3)
 
             dp = rospy.ServiceProxy('/rosplan_plan_dispatcher/dispatch_plan', DispatchService)
-            pt(3)
+            pt(5)
             dsr = dp()
             pt(1)
 
             goal_achieved = dsr.goal_achieved
             if not dsr.goal_achieved:
                 replans += 1
+                time.sleep(15)
 
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e

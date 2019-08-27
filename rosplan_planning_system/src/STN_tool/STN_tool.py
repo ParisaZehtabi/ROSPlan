@@ -170,7 +170,7 @@ class RobustEnvelope(object):
                 rospy.loginfo('KCL: (' + rospy.get_name() + ') STNTool returned a meaningful rectangle')
                 for p, (l, u) in res.items():
                     if p.name.find("?") < 0:                        
-                        print(p.name + " in [" + str(l) + ", " + str(u)  + "]")
+                        print(p.name + " in [" + str(float(l)) + ", " + str(float(u))  + "]")
                         #the upper and lower bound on the edges for parameters
                         self.dict_dur_lower[p.name] = float(l)
                         self.dict_dur_upper[p.name] = float(u)
