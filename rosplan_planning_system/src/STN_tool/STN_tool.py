@@ -174,14 +174,10 @@ class RobustEnvelope(object):
                     print(p.name + " in [" + str(min((float(u) - (float(time.process_time() - start))) , 0)) + ", " + str(float(u) - (float(time.process_time() - start)))  + "]")
                     #the upper and lower bound on the edges for parameters
                     self.dict_dur_lower[p.name] = float(l) - (float(time.process_time() - start))
-                    self.dict_dur_upper[p.name] = min((float(u) - (float(time.process_time() - start))) , 0)
-                    
-                    
-
-
-
-                    self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_lower_bound = float(l)
-                    self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_upper_bound = float(u)
+                    self.dict_dur_upper[p.name] = max((float(u) - (float(time.process_time() - start))) , 0)
+            
+                    self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_lower_bound = float(l) - (float(time.process_time() - start))
+                    self.output_robust_plan_msg.edges[self.dict_params[p.name]].duration_upper_bound = max((float(u) - (float(time.process_time() - start))) , 0)
 
                 #self.paramter_relate_edge()
                 self.publish_robust = True
