@@ -38,16 +38,19 @@ while not goal_achieved and replans<10:
     try:
         pg = rospy.ServiceProxy('/rosplan_problem_interface/problem_generation_server', Empty)
         time.sleep(3)
+        #rospy.Subscriber('', String, callback)
         if not pg():
             print('NO PROBLEM')
 
         #back time to 1
         pt = rospy.ServiceProxy('/sim_clock/set_time_scale', SetInt)
         pi = rospy.ServiceProxy('/rosplan_planner_interface/planning_server', Empty)
+        os.system('rostopic echo -n1 /rosplan_problem_interface/problem_instance')
         if not pi():
             replans += 1
         else:
             pp = rospy.ServiceProxy('/rosplan_parsing_interface/parse_plan', Empty)
+            os.system('rostopic echo -n1 /rosplan_planner_interface/planner_output')
             pp()
 
             if use_stn_tool:
