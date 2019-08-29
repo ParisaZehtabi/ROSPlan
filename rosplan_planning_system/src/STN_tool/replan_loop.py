@@ -59,7 +59,7 @@ while not goal_achieved and replans<10:
             time.sleep(3)
 
             dp = rospy.ServiceProxy('/rosplan_plan_dispatcher/dispatch_plan', DispatchService)
-            pt(5)
+            pt(3)
             dsr = dp()
             pt(1)
 
