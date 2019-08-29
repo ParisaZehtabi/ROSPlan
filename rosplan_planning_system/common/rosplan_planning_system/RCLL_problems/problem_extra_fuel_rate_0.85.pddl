@@ -31,7 +31,7 @@
     (not (ready_5))
     (not (ready_6))
     ;; order window closes
-    (at 430 (not (open ow0)))
+    (at 460 (not (open ow0)))
     (at 1010 (not (open ow1)))
     ;; charge level
     (= (battery_capacity r0) 177.0)
