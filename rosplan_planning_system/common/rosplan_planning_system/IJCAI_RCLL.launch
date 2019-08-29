@@ -46,7 +46,7 @@
          <arg name="domain_path"          value="$(arg domain_path)" />
          <arg name="problem_path"         value="$(arg problem_path)" />
          <arg name="data_path"            value="$(find rosplan_planning_system)/common/rosplan_planning_system/" />
-         <arg name="planner_command"      value="timeout 5 $(find rosplan_planning_system)/common/bin/popf -n DOMAIN PROBLEM" />
+         <arg name="planner_command"      value="timeout 7 $(find rosplan_planning_system)/common/bin/popf -n DOMAIN PROBLEM" />
      </include>
 
     <!-- plan parsing -->
@@ -117,18 +117,6 @@
         <arg name="pddl_action_name" value="produce_base_4" />
         <!--arg name="action_duration" value="119.99" /-->
         <arg name="action_duration" value="139.99" />
-    </include>
-
-    <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
-        <arg name="pddl_action_name" value="produce_base_5" />
-        <!--arg name="action_duration" value="119.99" /-->
-        <arg name="action_duration" value="129.99" />
-    </include>
-    
-    <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
-        <arg name="pddl_action_name" value="produce_base_6" />
-        <!--arg name="action_duration" value="119.99" /-->
-        <arg name="action_duration" value="119.99" />
     </include>
     
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
