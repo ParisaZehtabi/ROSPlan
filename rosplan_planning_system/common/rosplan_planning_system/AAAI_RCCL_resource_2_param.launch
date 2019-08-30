@@ -94,14 +94,16 @@
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="collect_order" />
         <arg name="action_duration" value="59.99" />
+        <arg name="assignment_value" value="13" />
+        <arg name="action_assignment_stddev" value="4" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
         <arg name="pddl_action_name" value="produce_base_1" />
         <arg name="action_duration" value="169.99" />
         <!--arg name="action_duration_stddev" value="59.99" /-->
-        <arg name="assignment_value" value="18" />
-        <arg name="action_assignment_stddev" value="3" />
+        <arg name="assignment_value" value="20" />
+        <arg name="action_assignment_stddev" value="6.5" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
@@ -109,7 +111,6 @@
         <arg name="action_duration" value="159.99" />
         <!--arg name="action_duration_stddev" value="119.99" /-->
         <arg name="assignment_value" value="20" />
-        <arg name="action_assignment_stddev" value="6.5" />
     </include>
 
     <include file="$(find rosplan_planning_system)/launch/includes/simulated_action.launch" >
