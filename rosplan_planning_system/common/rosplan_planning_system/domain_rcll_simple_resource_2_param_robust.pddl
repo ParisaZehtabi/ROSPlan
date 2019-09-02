@@ -9,8 +9,8 @@
 
 (:functions
     (ring_count ?o - order)
-    (charge_level ?r - robot)
     (order_weight ?o - order)
+    (charge_level ?r - robot)
     (battery_capacity ?r - robot)
 )
 
@@ -64,7 +64,6 @@
 ;; Collect order from shelf
 (:durative-action collect_order
     :parameters (?r - robot ?s - shelf ?o - order)
-    :synth-parameters (?weight_rate)
     :duration  (= ?duration 60) 
     :condition (and
         (over all (robot_at ?r ?s))
@@ -79,7 +78,6 @@
         (at start (not (not_carrying_order ?r)))
         (at start (not (not_collected ?o)))
         (at start (collected ?r ?o))
-        (at start (increase (order_weight ?o) ?weight_rate))
         (at end (carrying_order ?r ?o))
         (at end (ready_1))
         )
@@ -112,6 +110,7 @@
 ;; Wait for and retrieve a base from the base station
 (:durative-action produce_base_2
     :parameters (?r - robot ?bs - base_station ?o - order)
+    :synth-parameters (?weight_rate)
     :duration (= ?duration 160)
     :condition (and
         (at start (ready_2))
@@ -127,7 +126,7 @@
         (at start (ready_3))
         (at start (not (ready_2)))
         (at end (base_produced_2 ?o))
-        (at end (decrease (charge_level ?r) 20))
+        (at end (increase (order_weight ?o) ?weight_rate))
         )
 )
 
@@ -150,7 +149,7 @@
         (at start (ready_4))
         (at start (not (ready_3)))
         (at end (base_produced_3 ?o))
-        (at end (decrease (charge_level ?r) 20))
+        (at end (decrease (charge_level ?r) 40))
         )
 )
 
@@ -226,9 +225,9 @@
     :parameters (?r - robot ?rs - ring_station ?o - order)
     :duration (= ?duration (* 120 (ring_count ?o)))
     :condition (and
-        (at start (<= (order_weight ?o) 13))
         (over all (robot_at ?r ?rs))
         (at start (robot_at ?r ?rs))
+        (at start (<= (order_weight ?o) 110))
         (at end (robot_at ?r ?rs))
         (at start (base_produced_1 ?o))
         (at start (base_produced_2 ?o))
@@ -249,7 +248,7 @@
     :parameters (?r - robot ?ow - order_window ?o - order)
     :duration (= ?duration 1)
     :condition (and
-        (at start (>= (order_weight ?o) 8))
+        (at start (>= (order_weight ?o) 60))
         (at start (base_produced_1 ?o))
         (at start (base_produced_2 ?o))
         (at start (base_produced_3 ?o))
@@ -300,8 +299,8 @@
         (at end (not (base_produced_5 ?o)))
         (at end (not (base_produced_6 ?o)))
         (at end (not (ring_produced ?o)))
-        (at end (assign (charge_level ?r) (battery_capacity ?r)))
-        (at end (assign (order_weight ?o) 0))
+        (at end (assign (charge_level ?r) 150))
+        (at end (assign (order_weight ?o) (battery_capacity ?r)))
         )
 )
 

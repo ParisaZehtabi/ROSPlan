@@ -3,18 +3,18 @@
 /* The implementation of RPSimulatedActionInterface.h */
 namespace KCL_rosplan {
 
-	/* constructor */
-	RPSimulatedActionInterface::RPSimulatedActionInterface(ros::NodeHandle &nh) {
-		action_duration = 0.0;
-		action_probability = 1.0;
-		nh.getParam("action_duration", action_duration);
-		nh.getParam("assignment_value", assignment_value);
-		nh.getParam("action_duration_stddev", action_duration_stddev);
-		nh.getParam("action_assignment_stddev", action_assignment_stddev);
-		nh.getParam("action_probability", action_probability);
-	}
+    /* constructor */
+    RPSimulatedActionInterface::RPSimulatedActionInterface(ros::NodeHandle &nh) {
+        action_duration = 0.0;
+        action_probability = 1.0;
+        nh.getParam("action_duration", action_duration);
+        nh.getParam("assignment_value", assignment_value);
+        nh.getParam("action_duration_stddev", action_duration_stddev);
+        nh.getParam("action_assignment_stddev", action_assignment_stddev);
+        nh.getParam("action_probability", action_probability);
+    }
 
-	bool RPSimulatedActionInterface::applyNumericEffects(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr &msg, rosplan_dispatch_msgs::ActionFeedback &fb, bool start) {
+    bool RPSimulatedActionInterface::applyNumericEffects(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr &msg, rosplan_dispatch_msgs::ActionFeedback &fb, bool start) {
 
         // find PDDL parameters
         std::map<std::string, std::string> boundParameters;
@@ -27,10 +27,10 @@ namespace KCL_rosplan {
             }
         }
 
-		// update knowledge base
-		rosplan_knowledge_msgs::KnowledgeUpdateServiceArray updatePredSrv;
+        // update knowledge base
+        rosplan_knowledge_msgs::KnowledgeUpdateServiceArray updatePredSrv;
 
-		// numeric effects
+        // numeric effects
         std::vector<rosplan_knowledge_msgs::DomainAssignment>::iterator ait;
         std::vector<rosplan_knowledge_msgs::DomainAssignment>::iterator end;
         if(start) {
@@ -40,18 +40,21 @@ namespace KCL_rosplan {
             ait = op.at_end_assign_effects.begin();
             end = op.at_end_assign_effects.end();
         }
-
-		for(; ait!=end; ait++) {
-			rosplan_knowledge_msgs::KnowledgeItem item;
-			item.knowledge_type = rosplan_knowledge_msgs::KnowledgeItem::FUNCTION;
-			item.attribute_name = ait->LHS.name;
-			item.values.clear();
-			diagnostic_msgs::KeyValue pair;
-			for(size_t j=0; j<ait->LHS.typed_parameters.size(); j++) {
-				pair.key = predicates[ait->LHS.name].typed_parameters[j].key;
-				pair.value = boundParameters[ait->LHS.typed_parameters[j].key];
-				item.values.push_back(pair);
-			}
+        
+         double assign = assignment_value;
+         
+        for(; ait!=end; ait++) {
+            rosplan_knowledge_msgs::KnowledgeItem item;
+            item.knowledge_type = rosplan_knowledge_msgs::KnowledgeItem::FUNCTION;
+            item.attribute_name = ait->LHS.name;
+            item.values.clear();
+            diagnostic_msgs::KeyValue pair;
+            for(size_t j=0; j<ait->LHS.typed_parameters.size(); j++) {
+                pair.key = predicates[ait->LHS.name].typed_parameters[j].key;
+                pair.value = boundParameters[ait->LHS.typed_parameters[j].key];
+                item.values.push_back(pair);
+            }
+            
 
             // set up KB service
             ros::NodeHandle nh("~");
@@ -85,62 +88,105 @@ namespace KCL_rosplan {
             } else {
                 ROS_ERROR("KCL: (%s) could not call Knowledge Base for function value during assignment effect.", params.name.c_str());
             }
-
-            double assign = assignment_value;
+            
+            if(ait->RHS.tokens[0].expr_type == rosplan_knowledge_msgs::ExprBase::CONSTANT){
+                assign = ait->RHS.tokens[0].constant;
+            }else if(ait->RHS.tokens[0].expr_type == rosplan_knowledge_msgs::ExprBase::FUNCTION){
+                    funcSrv.request.predicate_name = ait->RHS.tokens[0].function.name;
+                    if(funcClient.call(funcSrv)) {
+                        std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator kit = funcSrv.response.attributes.begin();
+                        for(; kit!=funcSrv.response.attributes.end(); kit++) {
+                            bool match = true;
+                            if(kit->values.size() != ait->RHS.tokens[0].function.typed_parameters.size()) continue;
+                            for(int p=0; p<kit->values.size(); p++) {
+                                if(kit->values[p].value != boundParameters[ait->RHS.tokens[0].function.typed_parameters[p].key]) {
+                                    match = false;
+                                    break;
+                                }
+                            }
+                            if(match) {
+                                assign = kit->function_value;
+                                break;
+                            }
+                        }
+                    } else {
+                        ROS_ERROR("KCL: (%s) could not call Knowledge Base for function value during assignment effect.", params.name.c_str());
+                    }
+                        
+            }
+            
+           
+            if (assignment_value> 0){
+                assign = assignment_value;
+                std::cout<<assign<<std::endl;
+            }
+            
             if(action_assignment_stddev > 0) {
                 std::default_random_engine ass_gen(ros::WallTime::now().toSec());
                 std::normal_distribution<double> ass_dist(assignment_value, action_assignment_stddev);
                 assign = ass_dist(ass_gen);
+                std::cout<<"33333333333333333333333333"<<std::endl;
+                std::cout<<assign<<std::endl;
+                std::cout<<"4444444444444444444444444"<<std::endl;
+                
             }
 
             diagnostic_msgs::KeyValue assignPair;
             assignPair.key = "assignment";
             assignPair.value = std::to_string(assign);
+                            std::cout<<"555555555555555555555"<<std::endl;
+                std::cout<<assign<<std::endl;
+                std::cout<<"66666666666666666666"<<std::endl;
+                
+            
             fb.information.push_back(assignPair);
 
             switch(ait->assign_type) {
             case rosplan_knowledge_msgs::DomainAssignment::ASSIGN:
-				ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assign);
-				item.function_value = assign;
+                std::cout<<"7777777777777777777777"<<std::endl;
+                std::cout<<assign<<std::endl;
+                std::cout<<"88888888888888888888"<<std::endl;
+                ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+                item.function_value = assign;
                 break;
             case rosplan_knowledge_msgs::DomainAssignment::INCREASE:
-				ROS_INFO("KCL: (%s) increasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
-				item.function_value = function_value + assign;                    
+                ROS_INFO("KCL: (%s) increasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+                item.function_value = function_value + assign;                    
                 break;
             case rosplan_knowledge_msgs::DomainAssignment::DECREASE:
-				ROS_INFO("KCL: (%s) decreasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
-				item.function_value = function_value - assign;                    
+                ROS_INFO("KCL: (%s) decreasing %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+                item.function_value = function_value - assign;                    
                 break;
             case rosplan_knowledge_msgs::DomainAssignment::SCALE_UP:
-				ROS_INFO("KCL: (%s) scaling up %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
-				item.function_value = function_value * assign;                    
+                ROS_INFO("KCL: (%s) scaling up %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+                item.function_value = function_value * assign;                    
                 break;
             case rosplan_knowledge_msgs::DomainAssignment::SCALE_DOWN:
-				ROS_INFO("KCL: (%s) scaling down %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
-				item.function_value = function_value / assign;                    
+                ROS_INFO("KCL: (%s) scaling down %s in knowledge base by %f", params.name.c_str(), item.attribute_name.c_str(), assign);
+                item.function_value = function_value / assign;                    
                 break;
             case rosplan_knowledge_msgs::DomainAssignment::ASSIGN_CTS:
-				ROS_WARN("KCL: (%s) not implemented CONTINUOUS ASSIGNMENT effects of a simulated action.", params.name.c_str());                    
+                ROS_WARN("KCL: (%s) not implemented CONTINUOUS ASSIGNMENT effects of a simulated action.", params.name.c_str());                    
                 break;
             }
 
-			updatePredSrv.request.knowledge.push_back(item);
-			updatePredSrv.request.update_type.push_back(rosplan_knowledge_msgs::KnowledgeUpdateService::Request::ADD_KNOWLEDGE);
-		}
+            updatePredSrv.request.knowledge.push_back(item);
+            updatePredSrv.request.update_type.push_back(rosplan_knowledge_msgs::KnowledgeUpdateService::Request::ADD_KNOWLEDGE);
+        }
 
-		if(updatePredSrv.request.knowledge.size()>0 && !update_knowledge_client.call(updatePredSrv))
-			ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base", params.name.c_str());
+        if(updatePredSrv.request.knowledge.size()>0 && !update_knowledge_client.call(updatePredSrv))
+            ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base", params.name.c_str());
 
         return true;
     }
 
-	/* action dispatch callback */
-	bool RPSimulatedActionInterface::concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr &msg, rosplan_dispatch_msgs::ActionFeedback &fb) {
+    /* action dispatch callback */
+    bool RPSimulatedActionInterface::concreteCallback(const rosplan_dispatch_msgs::ActionDispatch::ConstPtr &msg, rosplan_dispatch_msgs::ActionFeedback &fb) {
 
         // apply numeric start effects
         applyNumericEffects(msg,fb,true);
 
-		// wait for some time
+        // wait for some time
         double duration = msg->duration - 1;
         if(action_duration > 0) {
             duration = action_duration - 1;
@@ -152,45 +198,45 @@ namespace KCL_rosplan {
             double d = distribution(generator);
             if(d < duration) d = duration + (duration - d);
             if(d < 0) d = 0;
-    		ROS_INFO("KCL: (%s) Action completing with probability %f and duration %f", params.name.c_str(), action_probability, d);
+            ROS_INFO("KCL: (%s) Action completing with probability %f and duration %f", params.name.c_str(), action_probability, d);
             if(d>0) {
-		        ros::Rate wait = 1.0 / d;
-		        wait.sleep();
+                ros::Rate wait = 1.0 / d;
+                wait.sleep();
             }
         } else {
-    		ROS_INFO("KCL: (%s) Action completing with probability %f and duration %f", params.name.c_str(), action_probability, duration);
+            ROS_INFO("KCL: (%s) Action completing with probability %f and duration %f", params.name.c_str(), action_probability, duration);
             if(duration>0) {
-		        ros::Rate wait = 1.0 / duration;
-		        wait.sleep();
+                ros::Rate wait = 1.0 / duration;
+                wait.sleep();
             }
         }
 
         // decide action success
         bool succ = (rand() % 100) <= (100 * action_probability);
 
-        if(succ) {
+        if(!action_cancelled && succ) {
             // apply numeric end effects
             applyNumericEffects(msg,fb,false);
         }
 
-		// complete the action
-		return succ;
-	}
+        // complete the action
+        return succ;
+    }
 } // close namespace
 
-	/*-------------*/
-	/* Main method */
-	/*-------------*/
+    /*-------------*/
+    /* Main method */
+    /*-------------*/
 
-	int main(int argc, char **argv) {
+    int main(int argc, char **argv) {
 
-		ros::init(argc, argv, "rosplan_simulated_action", ros::init_options::AnonymousName);
-		ros::NodeHandle nh("~");
+        ros::init(argc, argv, "rosplan_simulated_action", ros::init_options::AnonymousName);
+        ros::NodeHandle nh("~");
 
-		// create PDDL action subscriber
-		KCL_rosplan::RPSimulatedActionInterface rpsa(nh);
+        // create PDDL action subscriber
+        KCL_rosplan::RPSimulatedActionInterface rpsa(nh);
 
-		rpsa.runActionInterface();
+        rpsa.runActionInterface();
 
-		return 0;
-	}
+        return 0;
+    }

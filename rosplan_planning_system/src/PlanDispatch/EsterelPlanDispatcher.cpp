@@ -358,7 +358,11 @@ namespace KCL_rosplan {
                     // find the actual numeric assignment value
                     double assignment = 0;
                     for(int i=0;i<msg->information.size();i++) {
-                        if(msg->information[i].key=="assignment") assignment = std::atof(msg->information[i].value.c_str());
+                        if(msg->information[i].key=="assignment") 
+                            assignment = std::atof(msg->information[i].value.c_str());
+                            break;
+                            std::cout<<msg->information[i]<<std::endl;
+                            std::cout<<"000000000000000000000"<<std::endl;
                     }
                     // find the bounds
                     bool bound_found = false;
@@ -376,6 +380,8 @@ namespace KCL_rosplan {
                                 std::string substr;
                                 std::getline( ss, substr, ',' );
                                 lower = std::atof(substr.c_str());
+                                std::cout<<lower<<std::endl;
+                                std::cout<<"yessssssssssssssss"<<std::endl;
                                 
                                 
                             }
@@ -431,6 +437,7 @@ namespace KCL_rosplan {
                                             }
                                         }
                                     }
+                                    break;
                                 }
                             }
                         } else {

@@ -17,8 +17,10 @@
     ;; order
     (not_collected o0)
     (= (ring_count o0) 1)
+    (= (order_weight o0) 0)
     (not_collected o1)
     (= (ring_count o1) 3)
+    (= (order_weight o1) 0)
     ;; order window
     (open ow0)
     (accepts_order o0 ow0)
@@ -29,7 +31,6 @@
     (not (ready_3))
     (not (ready_4))
     (not (ready_5))
-    (not (ready_6))
     ;; order window closes
     (at 460 (not (open ow0)))
     (at 1010 (not (open ow1)))
