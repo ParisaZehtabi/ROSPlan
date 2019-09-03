@@ -217,14 +217,14 @@ namespace KCL_rosplan {
                         }
 
                         // check the current time with the upper bound
-                        if (NOW - planStartTime > maximum_dispatch_time) {
+                      //  if (NOW - planStartTime > maximum_dispatch_time) {
                             // don't check deadlines for actions that have actually completed.
-                            if(node.node_type != rosplan_dispatch_msgs::EsterelPlanNode::ACTION_END || !action_completed[node.action.action_id]) {
-                                replan_requested =  true;
-                                times_activate_action = false;
-                                ROS_INFO("KCL: (%s) Deadline passed, %s: %f > %f.", ros::this_node::getName().c_str(), node.name.c_str(), NOW-planStartTime, maximum_dispatch_time);
-                            }
-                        }
+                        //    if(node.node_type != rosplan_dispatch_msgs::EsterelPlanNode::ACTION_END || !action_completed[node.action.action_id]) {
+                          //      replan_requested =  true;
+                            //    times_activate_action = false;
+                              //  ROS_INFO("KCL: (%s) Deadline passed, %s: %f > %f.", ros::this_node::getName().c_str(), node.name.c_str(), NOW-planStartTime, maximum_dispatch_time);
+                           // }
+                       // }
                     }
 
                     // the lower bound of the action is not yet reached
