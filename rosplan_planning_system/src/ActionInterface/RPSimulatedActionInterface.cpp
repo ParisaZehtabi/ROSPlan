@@ -118,34 +118,24 @@ namespace KCL_rosplan {
            
             if (assignment_value> 0){
                 assign = assignment_value;
-                std::cout<<assign<<std::endl;
             }
             
             if(action_assignment_stddev > 0) {
                 std::default_random_engine ass_gen(ros::WallTime::now().toSec());
                 std::normal_distribution<double> ass_dist(assignment_value, action_assignment_stddev);
                 assign = ass_dist(ass_gen);
-                std::cout<<"33333333333333333333333333"<<std::endl;
-                std::cout<<assign<<std::endl;
-                std::cout<<"4444444444444444444444444"<<std::endl;
                 
             }
 
             diagnostic_msgs::KeyValue assignPair;
             assignPair.key = "assignment";
             assignPair.value = std::to_string(assign);
-                            std::cout<<"555555555555555555555"<<std::endl;
-                std::cout<<assign<<std::endl;
-                std::cout<<"66666666666666666666"<<std::endl;
                 
             
             fb.information.push_back(assignPair);
 
             switch(ait->assign_type) {
             case rosplan_knowledge_msgs::DomainAssignment::ASSIGN:
-                std::cout<<"7777777777777777777777"<<std::endl;
-                std::cout<<assign<<std::endl;
-                std::cout<<"88888888888888888888"<<std::endl;
                 ROS_INFO("KCL: (%s) updating %s in knowledge base to %f", params.name.c_str(), item.attribute_name.c_str(), assign);
                 item.function_value = assign;
                 break;
